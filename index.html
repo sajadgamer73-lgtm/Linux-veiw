@@ -187,50 +187,50 @@
         const umaskInput = document.getElementById('umaskInput');
         const calculatedResult = document.getElementById('calculatedResult');
 
-        umaskInput.addEventListener('input', () => {
-            let umask = umaskInput.value.trim();
-            if (umask.length === 3 && !isNaN(umask)) {
-                let defaultPerm = 666;
-                let umaskVal = parseInt(umask);
-                
-                // Subtract digits logic representation
-                let d1 = 6 - parseInt(umask[0]);
-                let d2 = 6 - parseInt(umask[1]);
-                let d3 = 6 - parseInt(umask[2]);
+        if (umaskInput && calculatedResult) {
+            umaskInput.addEventListener('input', () => {
+                let umask = umaskInput.value.trim();
+                if (umask.length === 3 && !isNaN(umask)) {
+                    let d1 = 6 - parseInt(umask[0]);
+                    let d2 = 6 - parseInt(umask[1]);
+                    let d3 = 6 - parseInt(umask[2]);
 
-                d1 = d1 < 0 ? 0 : d1;
-                d2 = d2 < 0 ? 0 : d2;
-                d3 = d3 < 0 ? 0 : d3;
+                    d1 = d1 < 0 ? 0 : d1;
+                    d2 = d2 < 0 ? 0 : d2;
+                    d3 = d3 < 0 ? 0 : d3;
 
-                const permString = (val) => {
-                    let r = (val & 4) ? 'r' : '-';
-                    let w = (val & 2) ? 'w' : '-';
-                    let x = (val & 1) ? 'x' : '-';
-                    return r + w + x;
-                };
+                    const permString = (val) => {
+                        let r = (val & 4) ? 'r' : '-';
+                        let w = (val & 2) ? 'w' : '-';
+                        let x = (val & 1) ? 'x' : '-';
+                        return r + w + x;
+                    };
 
-                const resStr = `${d1}${d2}${d3} (-${permString(d1)}${permString(d2)}${permString(d3)})`;
-                calculatedResult.textContent = resStr;
-            } else {
-                calculatedResult.textContent = "يرجى كتابة 3 أرقام (مثال: 022)";
-            }
-        });
+                    const resStr = `${d1}${d2}${d3} (-${permString(d1)}${permString(d2)}${permString(d3)})`;
+                    calculatedResult.textContent = resStr;
+                } else {
+                    calculatedResult.textContent = "يرجى كتابة 3 أرقام صحيحة (مثال: 022)";
+                }
+            });
+        }
 
         // Search Filter logic
         const searchInput = document.getElementById('searchInput');
         const cards = document.querySelectorAll('.command-card');
 
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                if (text.includes(term)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase().trim();
+                cards.forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    if (text.includes(term)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
             });
-        });
+        }
     </script>
 </body>
 </html>
