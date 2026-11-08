@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملخص وحاسبة أوامر نظام Linux</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap');
+        body { font-family: 'Vazirmatn', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 py-4 px-6 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <i class="fa-brands fa-linux text-3xl text-purple-400"></i>
+                <h1 class="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+                    دليل وملاحظات مادة Linux
+                </h1>
+            </div>
+            <span class="text-xs bg-slate-700 text-slate-300 px-3 py-1 rounded-full border border-slate-600">مرجع شامل للمراجعة</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto w-full p-4 flex-grow space-y-8 my-4">
+
+        <!-- Quick Calculator Component -->
+        <section class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl">
+            <h2 class="text-lg font-bold text-purple-300 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-calculator"></i>
+                حاسبة الصلاحيات وحساب Umask الفوري
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-700/60">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-2">أدخل قيمة Umask (مثلاً: 022 أو 027):</label>
+                    <input type="text" id="umaskInput" value="022" maxlength="3" 
+                           class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-purple-300 font-mono text-center focus:outline-none focus:border-purple-500">
+                </div>
+                <div class="flex flex-col justify-center">
+                    <span class="text-xs text-slate-400">صلاحية الملف الناتجة (من 666):</span>
+                    <span id="calculatedResult" class="text-lg font-bold font-mono text-green-400 mt-1">644 (-rw-r--r--)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search Bar -->
+        <div class="relative">
+            <input type="text" id="searchInput" placeholder="ابحث عن أي أمر (مثال: chmod, touch, cd, umask)..." 
+                   class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-right focus:outline-none focus:border-purple-500 text-slate-100 pl-10">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400"></i>
+        </div>
+
+        <!-- Section 1: Navigation & File Ops -->
+        <section class="command-card bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-md">
+            <h2 class="text-lg font-bold text-purple-400 mb-4 border-b border-slate-700 pb-2">
+                <i class="fa-solid fa-folder-open ml-2"></i>1. التنقل وعرض وتعديل الملفات
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-mono text-purple-300 font-bold dir-ltr">pwd</span>
+                        <span class="text-xs text-slate-400">مسار العمل</span>
+                    </div>
+                    <p class="text-xs text-slate-300">عرض مسار المجلد الحالي الذي تقف عليه (Print Working Directory).</p>
+                </div>
+
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-mono text-purple-300 font-bold dir-ltr">ls -la</span>
+                        <span class="text-xs text-slate-400">عرض التفاصيل</span>
+                    </div>
+                    <p class="text-xs text-slate-300">عرض كافة الملفات والمجلدات بما فيها المخفية مع الصلاحيات وتاريخ التعديل.</p>
+                </div>
+
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-mono text-purple-300 font-bold dir-ltr">cd [directory]</span>
+                        <span class="text-xs text-slate-400">تغيير المجلد</span>
+                    </div>
+                    <p class="text-xs text-slate-300">الانتقال بين المجلدات (`cd ..` للرجوع خطوة، `cd ~` للمجلد الرئيسي).</p>
+                </div>
+
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-mono text-purple-300 font-bold dir-ltr">touch [filename]</span>
+                        <span class="text-xs text-slate-400">إنشاء ملف</span>
+                    </div>
+                    <p class="text-xs text-slate-300">إنشاء ملف فارغ جديد بدون محتوى (مثال: `touch new.txt`).</p>
+                </div>
+
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-mono text-purple-300 font-bold dir-ltr">nano [filename]</span>
+                        <span class="text-xs text-slate-400">محرر النصوص</span>
+                    </div>
+                    <p class="text-xs text-slate-300">فتح ملف وكتابة/تعديل المحتوى داخله. اضغط `Ctrl + X` للحفظ والخروج.</p>
+                </div>
+
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-mono text-purple-300 font-bold dir-ltr">cat / tac</span>
+                        <span class="text-xs text-slate-400">قراءة الملفات</span>
+                    </div>
+                    <p class="text-xs text-slate-300">`cat` يعرض المحتوى من البداية، بينما `tac` يعرضه بشكل معكوس (من السطر الأخير للأول).</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section 2: Permissions & Octal Calculation -->
+        <section class="command-card bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-md">
+            <h2 class="text-lg font-bold text-pink-400 mb-4 border-b border-slate-700 pb-2">
+                <i class="fa-solid fa-lock ml-2"></i>2. الصلاحيات وإدارة الأذونات (Chmod & Umask)
+            </h2>
+            
+            <!-- Octal Values Table -->
+            <div class="overflow-x-auto mb-6">
+                <table class="w-full text-xs text-right border border-slate-700 rounded-lg overflow-hidden">
+                    <thead class="bg-slate-700 text-slate-200">
+                        <tr>
+                            <th class="p-2 border-b border-slate-600">القيمة الرقمية</th>
+                            <th class="p-2 border-b border-slate-600">الرمز (Symbol)</th>
+                            <th class="p-2 border-b border-slate-600">نوع الصلاحية</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-700 text-slate-300">
+                        <tr><td class="p-2 font-mono font-bold text-purple-400">4</td><td class="p-2 font-mono">r</td><td class="p-2">قراءة (Read)</td></tr>
+                        <tr><td class="p-2 font-mono font-bold text-purple-400">2</td><td class="p-2 font-mono">w</td><td class="p-2">كتابة (Write)</td></tr>
+                        <tr><td class="p-2 font-mono font-bold text-purple-400">1</td><td class="p-2 font-mono">x</td><td class="p-2">تنفيذ (Execute)</td></tr>
+                        <tr><td class="p-2 font-mono font-bold text-purple-400">0</td><td class="p-2 font-mono">-</td><td class="p-2">حجب/بدون صلاحية</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="space-y-4 text-xs text-slate-300">
+                <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/60">
+                    <h3 class="font-bold text-purple-300 mb-2">كيف تترجم الأرقام الثلاثة في chmod 755؟</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-400">
+                        <li><strong class="text-slate-200">الرقم الأول (7):</strong> للمالك (Owner) = 4 + 2 + 1 = <span class="font-mono text-purple-300">rwx</span></li>
+                        <li><strong class="text-slate-200">الرقم الثاني (5):</strong> للمجموعة (Group) = 4 + 0 + 1 = <span class="font-mono text-purple-300">r-x</span></li>
+                        <li><strong class="text-slate-200">الرقم الثالث (5):</strong> لبقية المستخدمين (Others) = 4 + 0 + 1 = <span class="font-mono text-purple-300">r-x</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Users & System Ops -->
+        <section class="command-card bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-md">
+            <h2 class="text-lg font-bold text-blue-400 mb-4 border-b border-slate-700 pb-2">
+                <i class="fa-solid fa-users ml-2"></i>3. إدارة الحسابات والملكية
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-mono text-blue-300 font-bold dir-ltr">sudo adduser [name]</span>
+                        <span class="text-xs text-slate-400">إضافة مستخدم</span>
+                    </div>
+                    <p class="text-xs text-slate-300">إضافة حساب مستخدم جديد للنظام، وسيطلب تحديد كلمة مرور له.</p>
+                </div>
+
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-mono text-blue-300 font-bold dir-ltr">sudo chown [user] [file]</span>
+                        <span class="text-xs text-slate-400">تغيير الملكية</span>
+                    </div>
+                    <p class="text-xs text-slate-300">تحويل ملكية الملف من المستخدم الحالي إلى مستخدم آخر.</p>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 border-t border-slate-700 py-4 text-center text-xs text-slate-500">
+        ملخص الأوامر والملاحظات الخاصة بمادة Linux
+    </footer>
+
+    <script>
+        // Umask Calculator logic
+        const umaskInput = document.getElementById('umaskInput');
+        const calculatedResult = document.getElementById('calculatedResult');
+
+        umaskInput.addEventListener('input', () => {
+            let umask = umaskInput.value.trim();
+            if (umask.length === 3 && !isNaN(umask)) {
+                let defaultPerm = 666;
+                let umaskVal = parseInt(umask);
+                
+                // Subtract digits logic representation
+                let d1 = 6 - parseInt(umask[0]);
+                let d2 = 6 - parseInt(umask[1]);
+                let d3 = 6 - parseInt(umask[2]);
+
+                d1 = d1 < 0 ? 0 : d1;
+                d2 = d2 < 0 ? 0 : d2;
+                d3 = d3 < 0 ? 0 : d3;
+
+                const permString = (val) => {
+                    let r = (val & 4) ? 'r' : '-';
+                    let w = (val & 2) ? 'w' : '-';
+                    let x = (val & 1) ? 'x' : '-';
+                    return r + w + x;
+                };
+
+                const resStr = `${d1}${d2}${d3} (-${permString(d1)}${permString(d2)}${permString(d3)})`;
+                calculatedResult.textContent = resStr;
+            } else {
+                calculatedResult.textContent = "يرجى كتابة 3 أرقام (مثال: 022)";
+            }
+        });
+
+        // Search Filter logic
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.command-card');
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(term)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
